@@ -1,5 +1,6 @@
 name: Publish
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -10,7 +11,7 @@ on:
 jobs:
   build_tarballs:
     name: Build tarballs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04-ppc64le
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,7 +28,7 @@ jobs:
 
   build_windows:
     name: Build windows executable
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04-ppc64le
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -63,16 +64,12 @@ jobs:
   build_musl:
     name: Build static musl binaries
     needs: [build_tarballs]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04-ppc64le
     strategy:
       fail-fast: false
       matrix:
-        platform: ["amd64", "i386", "ppc64le", "arm64v8", "arm32v7", "s390x", "riscv64"]
+        platform: ["ppc64le"]
     steps:
-      - name: Set up QEMU
-        if: matrix.platform != 'amd64'
-        uses: docker/setup-qemu-action@v3
-
       - uses: actions/download-artifact@v3
         with:
           name: patchelf
